@@ -1,0 +1,7 @@
+blah: bevan's lightweight aur helper
+
+Stupid aur helper I wrote in an hour or two in Python. Provides apt-like commands for installing and removing.
+
+Depends on click, aur (the python package), setuptools, and git
+
+Don't use this unless you really like this - use an alternative like paru or yay
