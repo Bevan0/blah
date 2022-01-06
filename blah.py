@@ -8,6 +8,9 @@ class Constants:
 def is_pkg_installed(package):
     return os.path.exists(f"{os.environ['HOME']}/aur/{package}")
 
+def abort(package):
+    os.remove(Constants.working_dir + f"/{package}")
+
 @click.group()
 def cli(): pass
 
@@ -32,6 +35,7 @@ def install(package_name):
     gitclone_result = os.system(f"git clone https://aur.archlinux.org/{package.name}.git")
     if(gitclone_result != 0):
         click.echo("Failed to download, aborting install")
+        abort()
         return
     
     click.echo(f"Building {package.name}")
@@ -39,6 +43,7 @@ def install(package_name):
     makepkg_result = os.system("makepkg -sfcri")
     if(makepkg_result != 0):
         click.echo("Failed to build/install, aborting install")
+        abort()
         return
     
     click.echo(f"Installed package successfully")
