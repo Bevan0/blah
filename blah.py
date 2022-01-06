@@ -42,7 +42,11 @@ def install(package_name):
         return
     
     click.echo(f"Installing {package.name} via pacman")
-    pacman_result = os.system(f"sudo pacman -U {package.name}-{package.version}-x86_64.pkg.tar.zst")
+    pacman_result = None
+    if os.path.exists(f"{package.name}-{package.version}-x86_64.pkg.tar.zst"):
+        pacman_result = os.system(f"sudo pacman -U {package.name}-{package.version}-x86_64.pkg.tar.zst")
+    elif os.path.exists(f"{package.name}-{package.version}-any.pkg.tar.zst"):
+        pacman_result = os.system(f"sudo pacman -U {package.name}-{package.version}-any.pkg.tar.zst")
     if(pacman_result != 0):
         click.echo("Failed to install, aborting install")
 
