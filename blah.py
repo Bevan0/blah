@@ -36,24 +36,11 @@ def install(package_name):
     
     click.echo(f"Building {package.name}")
     os.chdir(Constants.working_dir + f"/{package.name}")
-    makepkg_result = os.system("makepkg -sfcr")
+    makepkg_result = os.system("makepkg -sfcri")
     if(makepkg_result != 0):
-        click.echo("Failed to build, aborting install")
+        click.echo("Failed to build/install, aborting install")
         return
     
-    click.echo(f"Installing {package.name} via pacman")
-    pacman_result = None
-    if os.path.exists(f"{package.name}-{package.version}-x86_64.pkg.tar.zst"):
-        pacman_result = os.system(f"sudo pacman -U {package.name}-{package.version}-x86_64.pkg.tar.zst")
-    elif os.path.exists(f"{package.name}-{package.version}-any.pkg.tar.zst"):
-        pacman_result = os.system(f"sudo pacman -U {package.name}-{package.version}-any.pkg.tar.zst")
-    else:
-        click.echo("Package is not arch x86_64 or any, aborting install")
-        return
-    if(pacman_result != 0):
-        click.echo("Failed to install, aborting install")
-        return
-
     click.echo(f"Installed package successfully")
 
 @click.command()
