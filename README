@@ -11,3 +11,14 @@ Depends on:
 - sudo
 
 Don't use this unless you really like this - use an alternative like paru or yay
+
+Install with 'python setup.py install'
+
+Commands:
+'blah install PACKAGE' - installs the package
+'blah remove PACKAGE'  - removes the package
+'blah search PACKAGE'  - searches for the package
+'blah update PACKAGE'  - updates the package
+'blah update'          - updates all packages installed
+
+All AUR packages are built in ~/aur
