@@ -88,8 +88,26 @@ def search(package_name):
         print(f"Package {pkg.name} {pkg.version}")
 
 @click.command()
-@click.argument('package_name')
+@click.argument('package_name', required=False)
 def update(package_name):
+    if not package_name:
+        click.echo("Updating all packages")
+        packages = os.listdir(Constants.working_dir)
+        for pkg in packages:
+            os.chdir(Constants.working_dir + f"/{pkg}")
+            gitpull_result = subprocess.run(["git", "pull"], capture_output=True)
+            if (gitpull_result.returncode != 0):
+                click.echo(f"Failed to pull git repository of {pkg}, skipping")
+                continue
+            if (gitpull_result.stdout == b'Already up to date.\n'):
+                click.echo(f"{pkg} is up to date")
+                continue
+            makepkg_result = os.system("makepkg -sfcri")
+            if (makepkg_result != 0):
+                click.echo(f"Failed to build and/or install {pkg}, skipping")
+                continue
+        click.echo("Update succeeded")
+        return
     if not is_pkg_installed(package_name):
         click.echo("Package is not installed")
         return
