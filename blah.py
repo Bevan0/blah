@@ -74,14 +74,14 @@ def search(package_name):
         return
     
     search = aur.search(package_name)
-    if len(search) == 1:
+    if len(search) == 1 or search[0].name == package_name:
         print(f"Package {search[0].name} {search[0].version}")
         return
     
     if len(search) == 0:
         print(f"No packages found")
         return
-    
+
     print(f"Multiple packages found")
     for pkg in search:
         print(f"Package {pkg.name} {pkg.version}")
