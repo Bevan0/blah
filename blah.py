@@ -67,5 +67,26 @@ def remove(package_name):
 
     click.echo("Removal succeeded")
 
+@click.command()
+@click.argument('package_name')
+def search(package_name):
+    if is_pkg_installed(package_name):
+        click.echo(f"Package {package_name} is installed")
+        return
+    
+    search = aur.search(package_name)
+    if len(search) == 1:
+        print(f"Package {search[0].name} {search[0].version}")
+        return
+    
+    if len(search) == 0:
+        print(f"No packages found")
+        return
+    
+    print(f"Multiple packages found")
+    for pkg in search:
+        print(f"Package {pkg.name} {pkg.version}")
+
 cli.add_command(install)
 cli.add_command(remove)
+cli.add_command(search)
