@@ -1,6 +1,7 @@
 import click
 import os
 import aur
+import subprocess
 
 class Constants:
     working_dir = f"{os.environ['HOME']}/aur"
@@ -86,6 +87,35 @@ def search(package_name):
     for pkg in search:
         print(f"Package {pkg.name} {pkg.version}")
 
+@click.command()
+@click.argument('package_name')
+def update(package_name):
+    if not is_pkg_installed(package_name):
+        click.echo("Package is not installed")
+        return
+    
+    os.chdir(Constants.working_dir + f"/{package_name}")
+
+    
+
+    gitpull_result = subprocess.run(["git", "pull"], capture_output=True)
+    if (gitpull_result.returncode != 0):
+        click.echo("Failed to pull git repository, aborting update")
+        return
+    if (gitpull_result.stdout == b'Already up to date.\n'):
+        click.echo("Already newest version.")
+        return
+
+    makepkg_result = os.system("makepkg -sfcri")
+    
+    if(makepkg_result != 0):
+        click.echo("Failed to build and/or install, aborting update")
+        return
+    
+    click.echo("Update succeeded")
+    return
+
 cli.add_command(install)
 cli.add_command(remove)
 cli.add_command(search)
+cli.add_command(update)
