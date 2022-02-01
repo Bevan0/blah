@@ -97,9 +97,9 @@ def search(package_name):
         print(f"Package {pkg.name} {pkg.version}")
 
 @click.command()
-@click.argument('package_name', required=False)
+@click.argument('package_name', nargs=-1, required=False)
 def update(package_name):
-    if not package_name:
+    if len(package_name) == 0:
         click.echo("Updating all packages")
         packages = os.listdir(Constants.working_dir)
         for pkg in packages:
@@ -117,25 +117,27 @@ def update(package_name):
                 continue
         click.echo("Update succeeded")
         return
-    if not is_pkg_installed(package_name):
-        click.echo("Package is not installed")
-        return
     
-    os.chdir(Constants.working_dir + f"/{package_name}")
+    for packagename in package_name:
+        if not is_pkg_installed(packagename):
+            click.echo(f"Package {packagename} is not installed")
+            continue
 
-    gitpull_result = subprocess.run(["git", "pull"], capture_output=True)
-    if (gitpull_result.returncode != 0):
-        click.echo("Failed to pull git repository, aborting update")
-        return
-    if (gitpull_result.stdout == b'Already up to date.\n'):
-        click.echo("Already newest version.")
-        return
+        os.chdir(Constants.working_dir + f"/{packagename}")
 
-    makepkg_result = os.system("makepkg -sfcri")
-    
-    if(makepkg_result != 0):
-        click.echo("Failed to build and/or install, aborting update")
-        return
+        gitpull_result = subprocess.run(["git", "pull"], capture_output=True)
+        if (gitpull_result.returncode != 0):
+            click.echo(f"Failed to pull git repository, aborting updating {packagename}")
+            continue
+        if (gitpull_result.stdout == b'Already up to date.\n'):
+            click.echo(f"{packagename} is already newest version.")
+            continue
+
+        makepkg_result = os.system("makepkg -sfcri")
+
+        if(makepkg_result != 0):
+            click.echo(f"Failed to build and/or install, aborting updating {packagename}")
+            continue
     
     click.echo("Update succeeded")
     return
