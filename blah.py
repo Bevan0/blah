@@ -16,38 +16,44 @@ def clean(package):
 def cli(): pass
 
 @click.command()
-@click.argument("package_name")
-def install(package_name):
-    package = None
-    try:
-        package = aur.info(package_name)
-    except:
-        click.echo("Package doesn't exist on AUR, aborting install")
-        return
+@click.argument("packages_to_install", nargs=-1, required=True)
+def install(packages_to_install):
+    for package_name in packages_to_install:
+        package = None
     
-    click.echo(f"Found package: {package.name} {package.version}")
-    
-    if is_pkg_installed(package.name):
-        click.echo(f"Package is already installed on this system, aborting")
-        return
+        try:
+            package = aur.info(package_name)
+        except:
+            click.echo(f"Package {package_name} doesn't exist on AUR, skipping it")
+            continue
 
-    click.echo(f"Downloading {package.name}")
-    os.chdir(Constants.working_dir)
-    gitclone_result = os.system(f"git clone https://aur.archlinux.org/{package.name}.git")
-    if(gitclone_result != 0):
-        click.echo("Failed to download, aborting install")
-        clean(package_name)
-        return
-    
-    click.echo(f"Building {package.name}")
-    os.chdir(Constants.working_dir + f"/{package.name}")
-    makepkg_result = os.system("makepkg -sfcri")
-    if(makepkg_result != 0):
-        click.echo("Failed to build and/or install, aborting install")
-        clean(package_name)
-        return
-    
-    click.echo(f"Installed package successfully")
+        click.echo(f"Found package: {package.name} {package.version}")
+
+        if is_pkg_installed(package.name):
+            if len(packages_to_install) != 1: click.echo(f"Package {package.name} is already installed on this system, skipping it")
+            else: click.echo(f"Package {package.name} is already installed on this system")
+            continue
+
+        click.echo(f"Downloading {package.name}")
+        os.chdir(Constants.working_dir)
+        gitclone_result = os.system(f"git clone https://aur.archlinux.org/{package.name}.git")
+        if(gitclone_result != 0):
+            if len(packages_to_install) != 1: click.echo("Failed to download, skipping it")
+            else: click.echo("Failed to download, aborting")
+            clean(package_name)
+            continue
+
+        click.echo(f"Building {package.name}")
+        os.chdir(Constants.working_dir + f"/{package.name}")
+        makepkg_result = os.system("makepkg -sfcri")
+        if(makepkg_result != 0):
+            if len(packages_to_install) != 1: click.echo("Failed to build and/or install, skipping it")
+            else: click.echo("Failed to build and/or install, aborting")
+            clean(package_name)
+            continue
+
+        click.echo(f"Installed package {package.name} successfully")
+    if len(packages_to_install) != 1: click.echo("Finished installing packages successfully")
 
 @click.command()
 @click.argument('package_name')
