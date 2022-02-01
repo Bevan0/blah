@@ -142,7 +142,13 @@ def update(package_name):
     click.echo("Update succeeded")
     return
 
+@click.command(name="list")
+def listinstalled():
+    dirs = os.listdir(Constants.working_dir)
+    for directory in dirs: click.echo(directory) 
+
 cli.add_command(install)
 cli.add_command(remove)
 cli.add_command(search)
 cli.add_command(update)
+cli.add_command(listinstalled)
