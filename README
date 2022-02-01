@@ -18,7 +18,7 @@ Commands:
 'blah install PACKAGE1 PACKAGE2 ETC' - installs the package or packages
 'blah remove PACKAGE1 PACKAGE2 ETC'  - removes the package or packages
 'blah search PACKAGE'                - searches for the package
-'blah update PACKAGE'                - updates the package
+'blah update PACKAGE1 PACKAGE2 ETC'  - updates the package
 'blah update'                        - updates all packages installed
 'blah list'                          - prints out a list of all installed packages
 
