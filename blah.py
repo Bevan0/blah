@@ -56,7 +56,7 @@ def install(packages_to_install):
     if len(packages_to_install) != 1: click.echo("Finished installing packages successfully")
 
 @click.command()
-@click.argument('package_name', nargs=-1, required=True)
+@click.argument('packages_to_remove', nargs=-1, required=True)
 def remove(packages_to_remove):
     for package_name in packages_to_remove:
         if not is_pkg_installed(package_name):
@@ -64,7 +64,7 @@ def remove(packages_to_remove):
             else: click.echo("Package is not installed, aborting removal")
             continue
 
-        click.echo("Removing from pacman")
+        click.echo(f"Removing {package_name} from pacman")
         pacman_result = os.system(f"sudo pacman -R {package_name}")
         if (pacman_result != 0):
             if len(packages_to_remove) != 1: click.echo(f"Failed to remove {package_name} from pacman, skipping it")
