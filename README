@@ -20,5 +20,6 @@ Commands:
 'blah search PACKAGE'                - searches for the package
 'blah update PACKAGE'                - updates the package
 'blah update'                        - updates all packages installed
+'blah list'                          - prints out a list of all installed packages
 
 All AUR packages are built in ~/aur
