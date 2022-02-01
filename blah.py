@@ -56,22 +56,25 @@ def install(packages_to_install):
     if len(packages_to_install) != 1: click.echo("Finished installing packages successfully")
 
 @click.command()
-@click.argument('package_name')
-def remove(package_name):
-    if not is_pkg_installed(package_name):
-        click.echo("Package is not installed, aborting removal")
-        return
-    
-    click.echo("Removing from pacman")
-    pacman_result = os.system(f"sudo pacman -R {package_name}")
-    if (pacman_result != 0):
-        click.echo("Failed to remove from pacman, aborting removal")
-        return
+@click.argument('package_name', nargs=-1, required=True)
+def remove(packages_to_remove):
+    for package_name in packages_to_remove:
+        if not is_pkg_installed(package_name):
+            if len(packages_to_remove) != 1: click.echo(f"Package {package_name} is not installed, skipping it")
+            else: click.echo("Package is not installed, aborting removal")
+            continue
 
-    click.echo("Removing local build files")
-    clean(package_name)
+        click.echo("Removing from pacman")
+        pacman_result = os.system(f"sudo pacman -R {package_name}")
+        if (pacman_result != 0):
+            if len(packages_to_remove) != 1: click.echo(f"Failed to remove {package_name} from pacman, skipping it")
+            else: click.echo("Failed to remove from pacman, aborting removal")
+            continue
 
-    click.echo("Removal succeeded")
+        click.echo("Removing local build files")
+        clean(package_name)
+
+        click.echo(f"Removed package {package_name} successfully")
 
 @click.command()
 @click.argument('package_name')
