@@ -5,7 +5,8 @@ Stupid aur helper I wrote in an hour or two in Python. Provides apt-like command
 Depends on:
 - python
 - python-click
-- python-aur (AUR package/pip 'aur')
+- python-aur
+  - the main project is broken and has been pronounced dead; this fork by arcan1s should fix it: https://github.com/arcan1s/aur
 - setuptools
 - git
 - sudo
